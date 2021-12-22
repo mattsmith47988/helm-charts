@@ -1,0 +1,27 @@
+# helm upgrade --install prometheus prometheus-community/kube-prometheus-stack -n prometheus -f kube-prometheus-stack.yaml
+
+kubeApiServer:
+  enabled: false
+kubelet:
+  enabled: true
+kubeControllerManager:
+  enabled: false
+coreDns:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
+kubeStateMetrics:
+  enabled: true
+nodeExporter:
+  enabled: true
+alertmanager:
+  enabled: true
+grafana:
+  enabled: true
+
+prometheus:
+  enabled: true

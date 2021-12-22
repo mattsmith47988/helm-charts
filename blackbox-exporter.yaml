@@ -1,0 +1,126 @@
+# helm upgrade --install prometheus-blackbox-exporter prometheus-community/prometheus-blackbox-exporter -n prometheus -f blackbox-exporter.yaml
+
+resources:
+  limits:
+    memory: 300Mi
+    cpu: 100m
+  requests:
+    cpu: 50m
+    memory: 50Mi
+
+config:
+  modules:
+    tcp_connect:
+      prober: tcp
+      timeout: 5s
+    http_3xx:
+      prober: tcp
+      timeout: 5s
+      http:
+        valid_http_versions: ["HTTP/1.1"]
+        valid_status_codes: [302]
+        no_follow_redirects: true
+        method: GET
+        fail_if_not_ssl: false
+        preferred_ip_protocol: "ip4"
+        ip_protocol_fallback: false
+
+serviceMonitor:
+  enabled: true
+  # Default values that will be used for all ServiceMonitors created by `targets`
+  defaults:
+    labels:
+      release: prometheus
+      app: prometheus
+    interval: 30s
+    scrapeTimeout: 30s
+    module: tcp_connect
+  ## scheme: HTTP scheme to use for scraping. Can be used with `tlsConfig` for example if using istio mTLS.
+  scheme: http
+  ## tlsConfig: TLS configuration to use when scraping the endpoint. For example if using istio mTLS.
+  ## Of type: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#tlsconfig
+  tlsConfig: {}
+  bearerTokenFile:
+  targets:
+    - name: minecraft-current # Human readable URL that will appear in Prometheus / AlertManager
+      url: minecraft.jdimitrov.com:443 # The URL that blackbox will scrape
+      interval: 15s # Scraping interval. Overrides value set in `defaults`
+      scrapeTimeout: 5s # Scrape timeout. Overrides value set in `defaults`
+      module: tcp_connect # Module used for scraping. Overrides value set in `defaults`
+      additionalMetricsRelabels: {}
+      labels:
+        release: prometheus
+        app: prometheus
+    - name: minecraft-legacy # Human readable URL that will appear in Prometheus / AlertManager
+      url: minecraft.jdimitrov.com:25566 # The URL that blackbox will scrape
+      interval: 15s # Scraping interval. Overrides value set in `defaults`
+      scrapeTimeout: 5s # Scrape timeout. Overrides value set in `defaults`
+      module: tcp_connect # Module used for scraping. Overrides value set in `defaults`
+      additionalMetricsRelabels: {}
+      labels:
+        release: prometheus
+        app: prometheus
+
+prometheusRule:
+  enabled: true
+
+  additionalLabels:
+    release: prometheus
+    app: prometheus
+  rules:
+    - alert: MinecraftDown
+      annotations:
+        description: "Probe failed for Minecraft server: {{ `{{ $value }}` }}"
+        summary: Probe failed for Minecraft server (instance {{ `{{ $labels.instance }}` }})
+      expr: probe_success{target="minecraft-current"} == 0
+      for: 2m
+      labels:
+        severity: critical
+    - alert: MinecraftDown_Legacy
+      annotations:
+        description: "Probe failed for Minecraft server: {{ `{{ $value }}` }}"
+        summary: Probe failed for Minecraft server (instance {{ `{{ $labels.instance }}` }})
+      expr: probe_success{target="minecraft-legacy"} == 0
+      for: 2m
+      labels:
+        severity: warning
+    - alert: ProbeFailed
+      annotations:
+        description: "Probe failed: {{ `{{ $value }}` }}"
+        summary: Probe failed (instance {{ `{{ $labels.instance }}` }})
+      expr: probe_success == 0
+      for: 5m
+      labels:
+        severity: error
+    - alert: StatusCode
+      annotations:
+        description: "HTTP status code is not 200-399: {{ `{{ $value }}` }}"
+        summary: Status Code (instance {{ `{{ $labels.instance }}` }})
+      expr: probe_http_status_code <= 199 OR probe_http_status_code >= 400
+      for: 5m
+      labels:
+        severity: error
+    - alert: SslCertificateWillExpireSoon
+      annotations:
+        description: "SSL certificate expires in 30 days: {{ `{{ $value }}` }}"
+        summary: SSL certificate will expire soon (instance {{ `{{ $labels.instance }}` }})
+      expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 30
+      for: 5m
+      labels:
+        severity: warning
+    - alert: SslCertificateHasExpired
+      annotations:
+        description: "SSL certificate has expired already: {{ `{{ $value }}` }}"
+        summary: SSL certificate has expired (instance {{ `{{ $labels.instance }}` }})
+      expr: probe_ssl_earliest_cert_expiry - time()  <= 0
+      for: 5m
+      labels:
+        severity: error
+    - alert: BlackboxSlowRequests
+      annotations:
+        description: "Blackbox request took more than 2s: {{ `{{ $value }}` }}"
+        summary: Blackbox slow requests (instance {{ `{{ $labels.instance }}` }})
+      expr: probe_http_duration_seconds > 2
+      for: 5m
+      labels:
+        severity: warning
