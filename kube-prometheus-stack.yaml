@@ -3,7 +3,7 @@
 kubeApiServer:
   enabled: false
 kubelet:
-  enabled: true
+  enabled: false 
 kubeControllerManager:
   enabled: false
 coreDns:
@@ -15,13 +15,33 @@ kubeScheduler:
 kubeProxy:
   enabled: false
 kubeStateMetrics:
-  enabled: true
+  enabled: false
 nodeExporter:
-  enabled: true
+  enabled: false
 alertmanager:
-  enabled: true
+  enabled: false
 grafana:
   enabled: true
+  persistence:
+    enabled: true
+
+  grafana.ini:
+    server:
+      root_url: https://grafana.petersenandpetersen.com
+      disable_login_form: true
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubernetes.io/ingress.class: nginx
+    hosts:
+      - grafana.petersenandpetersen.com
+    tls:
+      - hosts:
+          - grafana.petersenandpetersen.com
+        secretName: grafana.petersenandpetersen.com
+    
+
 
 prometheus:
   enabled: true
