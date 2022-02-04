@@ -1,7 +1,8 @@
+# helm-charts
 
-minikube addons enable ingress
+Add this to your helm repos:
 
-helm repo add jetstack https://charts.jetstack.io
-helm upgrade --install cert-manager jetstack/cert-manager --namespace cluster-tools --create-namespace --set installCRDs=true
-
-kubectl -n cluster-tools apply -f letsencrypt-prod.yaml
+```
+helm repo add mattsmith47988 https://mattsmith47988.github.io/helm-charts/
+helm repo update
+```
