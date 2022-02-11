@@ -9,7 +9,7 @@ entries:
     name: helperbot
     type: application
     urls:
-    - helperbot-0.1.0.tgz
+    - https://mattsmith47988.github.io/helm-charts/helperbot-0.1.0.tgz
     version: 0.1.0
   word-guessing-game:
   - apiVersion: v2
