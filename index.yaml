@@ -3,7 +3,7 @@ entries:
   helperbot:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-02-11T11:12:26.060793-06:00"
+    created: "2022-02-11T11:33:15.956255-06:00"
     description: A Helm chart for Kubernetes
     digest: 5a07ac7aaa6750677215bd055714001a94b4018e42c187e21f181ff2c689808c
     name: helperbot
@@ -11,10 +11,32 @@ entries:
     urls:
     - https://mattsmith47988.github.io/helm-charts/helperbot/helperbot-0.1.0.tgz
     version: 0.1.0
+  recipes-app:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-02-11T11:33:15.95816-06:00"
+    description: A Helm chart for Kubernetes
+    digest: 8b124c8a9201fe0616d737ffc79e831c72f54455efc3b4789b89411ecc1ad257
+    name: recipes-app
+    type: application
+    urls:
+    - https://mattsmith47988.github.io/helm-charts/recipes-app/recipes-app-0.1.0.tgz
+    version: 0.1.0
+  tetris-app:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-02-11T11:33:15.958864-06:00"
+    description: A Helm chart for Kubernetes
+    digest: 083e74009d771bbb9ebca947db31dae0a218a185a40bf043b1a77df222bd9bec
+    name: tetris-app
+    type: application
+    urls:
+    - https://mattsmith47988.github.io/helm-charts/tetris-app/tetris-app-0.1.0.tgz
+    version: 0.1.0
   word-guessing-game:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-02-03T12:26:16.678719-06:00"
+    created: "2022-02-11T11:33:15.959581-06:00"
     description: A Helm chart for Kubernetes
     digest: 366f745af8107ef62e3b2a1ecf0ea9e0b048002b191a18699a9161ea306da959
     name: word-guessing-game
@@ -22,4 +44,4 @@ entries:
     urls:
     - https://mattsmith47988.github.io/helm-charts/word-guessing-game/word-guessing-game-0.1.0.tgz
     version: 0.1.0
-generated: "2022-02-11T11:12:26.05996-06:00"
+generated: "2022-02-11T11:33:15.953465-06:00"
