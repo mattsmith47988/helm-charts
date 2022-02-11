@@ -1,5 +1,16 @@
 apiVersion: v1
 entries:
+  helperbot:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-02-11T11:12:26.060793-06:00"
+    description: A Helm chart for Kubernetes
+    digest: 5a07ac7aaa6750677215bd055714001a94b4018e42c187e21f181ff2c689808c
+    name: helperbot
+    type: application
+    urls:
+    - helperbot-0.1.0.tgz
+    version: 0.1.0
   word-guessing-game:
   - apiVersion: v2
     appVersion: 1.16.0
@@ -11,4 +22,4 @@ entries:
     urls:
     - https://mattsmith47988.github.io/helm-charts/word-guessing-game-0.1.0.tgz
     version: 0.1.0
-generated: "2022-02-03T12:26:16.678033-06:00"
+generated: "2022-02-11T11:12:26.05996-06:00"
