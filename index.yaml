@@ -3,7 +3,7 @@ entries:
   helperbot:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-02-11T11:33:15.956255-06:00"
+    created: "2022-02-17T22:39:17.27050842-06:00"
     description: A Helm chart for Kubernetes
     digest: 5a07ac7aaa6750677215bd055714001a94b4018e42c187e21f181ff2c689808c
     name: helperbot
@@ -11,10 +11,21 @@ entries:
     urls:
     - https://mattsmith47988.github.io/helm-charts/helperbot/helperbot-0.1.0.tgz
     version: 0.1.0
+  holomatch:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-02-17T22:39:17.271539383-06:00"
+    description: A Helm chart for Kubernetes
+    digest: 4ef7e28221f72e723b5ee21d1ee1a0db40ae77086539a25f7c790f5df2a9e06f
+    name: holomatch
+    type: application
+    urls:
+    - https://mattsmith47988.github.io/helm-charts/holomatch/holomatch-0.1.0.tgz
+    version: 0.1.0
   recipes-app:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-02-11T11:33:15.95816-06:00"
+    created: "2022-02-17T22:39:17.272909171-06:00"
     description: A Helm chart for Kubernetes
     digest: 8b124c8a9201fe0616d737ffc79e831c72f54455efc3b4789b89411ecc1ad257
     name: recipes-app
@@ -25,7 +36,7 @@ entries:
   tetris-app:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-02-11T11:33:15.958864-06:00"
+    created: "2022-02-17T22:39:17.274152232-06:00"
     description: A Helm chart for Kubernetes
     digest: 083e74009d771bbb9ebca947db31dae0a218a185a40bf043b1a77df222bd9bec
     name: tetris-app
@@ -36,7 +47,7 @@ entries:
   word-guessing-game:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-02-11T11:33:15.959581-06:00"
+    created: "2022-02-17T22:39:17.275324923-06:00"
     description: A Helm chart for Kubernetes
     digest: 366f745af8107ef62e3b2a1ecf0ea9e0b048002b191a18699a9161ea306da959
     name: word-guessing-game
@@ -44,4 +55,4 @@ entries:
     urls:
     - https://mattsmith47988.github.io/helm-charts/word-guessing-game/word-guessing-game-0.1.0.tgz
     version: 0.1.0
-generated: "2022-02-11T11:33:15.953465-06:00"
+generated: "2022-02-17T22:39:17.232864203-06:00"
