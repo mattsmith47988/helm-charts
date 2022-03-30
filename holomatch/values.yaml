@@ -81,3 +81,75 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+holomatch:
+
+  hostname: 'K8s Server'
+  motd: 'Welcome to my server'
+  maxClients: 12
+  privateClients: 0
+  privatePassword: ""
+  rconpassword: "iddqd"
+  maxRate: 10000
+  pureServer: 0
+  # set holodeck doors. 1=on, 0=off (Default: 1)
+  holoIntro: 0
+  # set if you want a map_restart. 1=on, 0=off (Default: 1)
+  doWarmup: 1
+  # set time in seconds until map_restart.
+  warmup: 20
+  # set time you get to beam into holodeck before you can be hit
+  ghostRespawn: 5
+  # set time in seconds intermission can last
+  intermissionTime: 30
+
+  # add up to 4 additional master servers to report to
+  additionalMasters:
+    - "master.stvef.org"
+
+  botLevel: 5
+  botList:
+    - tuvok
+    - gowron
+    - janeway
+    - seven
+
+  ffa:
+    enabled: true
+    # set fraglimit. Fraglimit of 0 is default for CTF. Set to 0 for no limit.
+    fragLimit: 20
+    # set timelimit. Timelimit of 30 is default for CTF. Set to 0 for no limit.
+    timeLimit: 10
+    # set weapon respawn times for free for all in seconds. May need to decrease for large number of clients. (Default: 5)
+    weaponRespawn: 5
+    #Make weapons respawn faster with a lot of players. 1=on, 0=off (Default: 1)
+    adaptRespawn: 1
+    # set voting
+    allowVote: 1
+    # set power multiples for quad damage (Default: 3)
+    quadFactor: 3
+
+    mapList:
+      - HM_BORG3
+      - HM_VOY2
+      - HM_FOR1
+
+  ctf:
+    enabled: true
+    # turn on friendly fire. Friendlyfire off is default for CTF. 1=on
+    friendlyFire: 0
+    # set flag capture limit before level changes. Set to 0 for no limit (Default: 8)
+    captureLimit: 10
+    # set fraglimit. Fraglimit of 0 is default for CTF. Set to 0 for no limit.
+    fragLimit: 0
+    # set timelimit. Timelimit of 30 is default for CTF. Set to 0 for no limit.
+    timeLimit: 30
+    # set weapon respawn times for free for all in seconds. May need to decrease for large number of clients. (Default: 5)
+    weaponRespawn: 5
+    #Make weapons respawn faster with a lot of players. 1=on, 0=off (Default: 1)
+    adaptRespawn: 1
+
+    mapList:
+      - CTF_KLN1
+      - CTF_BREACH
+      - CTF_GEOTHERMAL

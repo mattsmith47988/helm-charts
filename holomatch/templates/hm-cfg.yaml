@@ -1,0 +1,120 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hm-cfg
+data:
+  hm.cfg: |
+    {{- with .Values.holomatch }}
+
+    //set Maximum number of clients
+    sv_maxclients 12
+
+    //set host name that shows up in server list. Change below to your server name preference
+    sv_hostname {{ .hostname | quote }}
+
+    //set message of the day that players see while connecting to the server. Must be set before level loads. Change below to your message of the day preference.
+    g_motd {{ .motd | quote }}
+
+    //set the number of private clients
+    sv_privateClients {{ .privateClients | default 0 }}
+    //set Password for private clients
+    sv_privatePassword {{ .privatePassword | quote }}
+
+    //set remote console password used by client
+    rconpassword {{ .rconpassword | quote }}
+
+    //set max allowable rate for a client. 8000 to 10000 recommended. Max: 25000 (Default: 0)
+    sv_maxRate {{ .maxRate | default 0 }}
+
+    //Pure Server: turn on/off pak cheat check. 1=on, 0=off (Default: 1)
+    sv_pure {{ .pureServer | default 1}}
+
+    //add up to 4 additional master servers to report to
+    {{- range $index,$master := .additionalMasters }}
+    sv_master{{ add $index 2 }} {{ $master | quote }}
+    {{ end }}
+    // global configs
+    g_doWarmup {{ .doWarmup | default 1 }}
+    g_warmup {{ .warmup | default 20 }}
+    g_holoIntro {{ .holoIntro | default 0 }}
+    g_intermissionTime {{ .intermissionTime | default 20 }}
+
+    // ctf configs
+    {{- with .ctf -}}
+    {{ if .enabled }}
+    set ctfVars "g_gamemode 4; g_friendlyFire {{ .friendlyFire -}}
+    ; capturelimit {{ .captureLimit -}}
+    ; fraglimit {{ .fragLimit -}}
+    ; timelimit {{ .timeLimit -}}
+    ; g_weaponrespawn {{ .weaponRespawn -}}
+    ; g_adaptrespawn {{ .adaptRespawn }}"
+    {{- $numMaps := (.mapList | len) }}
+    {{ range $index, $map := .mapList -}}
+    set ctf{{ (add $index 1) }} "vstr ctfVars; map {{ $map }}; 
+    {{- if and (eq (add $index 1) $numMaps) ($.Values.holomatch.ffa.enabled) -}} set nextmap vstr ffa1"
+    {{- else if eq (add $index 1) $numMaps -}} set nextmap vstr ctf1"
+    {{- else -}} set nextmap vstr ctf{{ (add $index 2) }}"
+    {{- end }}
+    {{ end }}
+    {{- end -}}
+    {{- end -}}
+
+    // ffa configs
+    {{- with .ffa -}}
+    {{ if .enabled }}
+    set ffaVars "g_gamemode 0; fraglimit {{ .fragLimit -}}
+    ; timelimit {{ .timeLimit -}}
+    ; g_weaponrespawn {{ .weaponRespawn -}}
+    ; g_adaptrespawn {{ .adaptRespawn }}"
+    {{- $numMaps := (.mapList | len) }}
+    {{ range $index, $map := .mapList -}}
+    set ffa{{ (add $index 1) }} "vstr ffaVars; map {{ $map }}; 
+    {{- if and (eq (add $index 1) $numMaps) ($.Values.holomatch.ctf.enabled) -}} set nextmap vstr ctf1"
+    {{- else if eq (add $index 1) $numMaps -}} set nextmap vstr ffa1"
+    {{- else -}} set nextmap vstr ffa{{ (add $index 2) }}"
+    {{- end }}
+    {{ end }}
+    {{- end -}}
+    {{- end }}
+
+    // This command starts the first map.
+    {{- if .ctf.enabled }}
+    vstr ctf1
+    {{ else if .ffa.enabled }}
+    vstr ffa1
+    {{- end }}
+
+    //set voting. 1=on, 0=off (Default: 1)
+    g_allowvote 1
+
+    //set power multiples for quad damage (Default: 3)
+    g_quadfactor 3
+
+    //set if you want a map_restart. 1=on, 0=off (Default: 1)
+    g_doWarmup 0
+
+    //set time in seconds until map_restart.
+    //g_warmup 20
+
+    //set holodeck doors. 1=on, 0=off (Default: 1)
+    g_holoIntro 1
+
+    //set time in seconds intermission can last
+    //g_intermissionTime 20
+
+    //set time you get to beam into holodeck before you can be hit
+    g_ghostRespawn 5
+
+    //bots to add
+    {{ $botLevel := .botLevel -}}
+    {{- $team := "none" -}}
+
+    {{- range $index,$bot := .botList }}
+    {{- if eq (mod $index 2) 0 -}}
+    {{- $team = "blue" -}}
+    {{- else -}}
+    {{- $team = "red" -}}
+    {{- end -}}
+    addbot {{ $bot }} {{ $botLevel }} {{ $team }} 100
+    {{ end }}
+    {{ end }}
