@@ -38,8 +38,8 @@ securityContext: {}
 
 service:
   type: NodePort
-  port: 27960
-  nodePort: 27960
+  port: 30000
+  nodePort: 30000
 
 ingress:
   enabled: false
