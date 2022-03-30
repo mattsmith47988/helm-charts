@@ -8,7 +8,7 @@ image:
   repository: mattsmith47988/holomatch
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.1.1"
+  tag: "0.1.3"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -94,6 +94,8 @@ holomatch:
   pureServer: 0
   # set holodeck doors. 1=on, 0=off (Default: 1)
   holoIntro: 0
+  # set voting. 1=on, 0=off (Default: 1)
+  allowVote: 1
   # set if you want a map_restart. 1=on, 0=off (Default: 1)
   doWarmup: 1
   # set time in seconds until map_restart.
@@ -102,6 +104,8 @@ holomatch:
   ghostRespawn: 5
   # set time in seconds intermission can last
   intermissionTime: 30
+  # set power multiples for quad damage (Default: 3)
+  quadFactor: 3
 
   # add up to 4 additional master servers to report to
   additionalMasters:
