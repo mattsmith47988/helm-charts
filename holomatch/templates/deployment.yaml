@@ -49,6 +49,14 @@ spec:
               port: 80
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - name: config-files
+            mountPath: /stvef/baseEF/hm.cfg
+            subPath: hm.cfg
+      volumes:
+        - name: config-files
+          configMap:
+            name: hm-cfg
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
