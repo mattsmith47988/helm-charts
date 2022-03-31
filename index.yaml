@@ -3,7 +3,7 @@ entries:
   helperbot:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-03-30T13:06:52.388592-05:00"
+    created: "2022-03-31T18:59:04.562973098-05:00"
     description: A Helm chart for Kubernetes
     digest: 5a07ac7aaa6750677215bd055714001a94b4018e42c187e21f181ff2c689808c
     name: helperbot
@@ -14,7 +14,17 @@ entries:
   holomatch:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-03-30T13:06:52.397942-05:00"
+    created: "2022-03-31T18:59:04.574266141-05:00"
+    description: A Helm chart for Kubernetes
+    digest: 129e36a27a6795699ad2f24de8e2d8f701d788c39310034970cfcb5cb3030231
+    name: holomatch
+    type: application
+    urls:
+    - https://mattsmith47988.github.io/helm-charts/holomatch/holomatch-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-03-31T18:59:04.570083106-05:00"
     description: A Helm chart for Kubernetes
     digest: eedf9720978160245f29620d22ea75e22dee42215f9ebbc5b6f8545188703556
     name: holomatch
@@ -24,7 +34,7 @@ entries:
     version: 0.1.6
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-03-30T13:06:52.394329-05:00"
+    created: "2022-03-31T18:59:04.567795639-05:00"
     description: A Helm chart for Kubernetes
     digest: ad568d0487124ed983d1e2d1ecd758f55046b6e2fa6c634c8161678c876d3e86
     name: holomatch
@@ -34,7 +44,7 @@ entries:
     version: 0.1.5
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-03-30T13:06:52.392692-05:00"
+    created: "2022-03-31T18:59:04.565711816-05:00"
     description: A Helm chart for Kubernetes
     digest: 95b675838c951ce8bbde30870dbbcc0a5b4b6133cbf773e1d48a56ebf7437199
     name: holomatch
@@ -44,7 +54,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-03-30T13:06:52.391513-05:00"
+    created: "2022-03-31T18:59:04.56485893-05:00"
     description: A Helm chart for Kubernetes
     digest: fd6ae72c706a470df84abd700a66f23948493a1620b5ef5e27dc9706da6a218d
     name: holomatch
@@ -54,7 +64,7 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-03-30T13:06:52.390534-05:00"
+    created: "2022-03-31T18:59:04.564143845-05:00"
     description: A Helm chart for Kubernetes
     digest: 41625bfc5e02733e1763ab7014991dd3b2dbd511c605dbe2b549499a9c2eec2e
     name: holomatch
@@ -64,7 +74,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-03-30T13:06:52.389818-05:00"
+    created: "2022-03-31T18:59:04.563666414-05:00"
     description: A Helm chart for Kubernetes
     digest: acecc66be3f1e3079069f0c4845ba893eb8e8794995297ede6d3ffb50760c616
     name: holomatch
@@ -74,7 +84,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-03-30T13:06:52.389079-05:00"
+    created: "2022-03-31T18:59:04.563290428-05:00"
     description: A Helm chart for Kubernetes
     digest: 4ef7e28221f72e723b5ee21d1ee1a0db40ae77086539a25f7c790f5df2a9e06f
     name: holomatch
@@ -85,7 +95,7 @@ entries:
   recipes-app:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-03-30T13:06:52.398865-05:00"
+    created: "2022-03-31T18:59:04.574767097-05:00"
     description: A Helm chart for Kubernetes
     digest: 8b124c8a9201fe0616d737ffc79e831c72f54455efc3b4789b89411ecc1ad257
     name: recipes-app
@@ -96,7 +106,7 @@ entries:
   tetris-app:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-03-30T13:06:52.399808-05:00"
+    created: "2022-03-31T18:59:04.575207934-05:00"
     description: A Helm chart for Kubernetes
     digest: 083e74009d771bbb9ebca947db31dae0a218a185a40bf043b1a77df222bd9bec
     name: tetris-app
@@ -107,7 +117,7 @@ entries:
   word-guessing-game:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-03-30T13:06:52.400717-05:00"
+    created: "2022-03-31T18:59:04.575639748-05:00"
     description: A Helm chart for Kubernetes
     digest: 366f745af8107ef62e3b2a1ecf0ea9e0b048002b191a18699a9161ea306da959
     name: word-guessing-game
@@ -115,4 +125,4 @@ entries:
     urls:
     - https://mattsmith47988.github.io/helm-charts/word-guessing-game/word-guessing-game-0.1.0.tgz
     version: 0.1.0
-generated: "2022-03-30T13:06:52.385943-05:00"
+generated: "2022-03-31T18:59:04.562116862-05:00"
