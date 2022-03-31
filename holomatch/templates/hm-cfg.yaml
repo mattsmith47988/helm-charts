@@ -7,7 +7,7 @@ data:
     {{- with .Values.holomatch }}
 
     //set Maximum number of clients
-    sv_maxclients 12
+    sv_maxclients {{ .maxClients | default 12 }}
 
     //set host name that shows up in server list. Change below to your server name preference
     sv_hostname {{ .hostname | quote }}
@@ -27,7 +27,7 @@ data:
     sv_maxRate {{ .maxRate | default 0 }}
 
     //Pure Server: turn on/off pak cheat check. 1=on, 0=off (Default: 1)
-    sv_pure {{ .pureServer | default 1}}
+    sv_pure {{ .pureServer | default 1 }}
 
     //add up to 4 additional master servers to report to
     {{- range $index,$master := .additionalMasters }}
@@ -38,11 +38,13 @@ data:
     g_warmup {{ .warmup | default 20 }}
     g_holoIntro {{ .holoIntro | default 0 }}
     g_intermissionTime {{ .intermissionTime | default 20 }}
-
+    g_ghostRespawn {{ .ghostRespawn | default 5 }}
+    g_allowvote {{ .allowVote | default 1 }}
+    
     // ctf configs
     {{- with .ctf -}}
     {{ if .enabled }}
-    set ctfVars "g_gamemode 4; g_friendlyFire {{ .friendlyFire -}}
+    set ctfVars "g_gametype 4; g_friendlyFire {{ .friendlyFire -}}
     ; capturelimit {{ .captureLimit -}}
     ; fraglimit {{ .fragLimit -}}
     ; timelimit {{ .timeLimit -}}
@@ -62,7 +64,7 @@ data:
     // ffa configs
     {{- with .ffa -}}
     {{ if .enabled }}
-    set ffaVars "g_gamemode 0; fraglimit {{ .fragLimit -}}
+    set ffaVars "g_gametype 0; fraglimit {{ .fragLimit -}}
     ; timelimit {{ .timeLimit -}}
     ; g_weaponrespawn {{ .weaponRespawn -}}
     ; g_adaptrespawn {{ .adaptRespawn }}"
@@ -83,27 +85,6 @@ data:
     {{ else if .ffa.enabled }}
     vstr ffa1
     {{- end }}
-
-    //set voting. 1=on, 0=off (Default: 1)
-    g_allowvote 1
-
-    //set power multiples for quad damage (Default: 3)
-    g_quadfactor 3
-
-    //set if you want a map_restart. 1=on, 0=off (Default: 1)
-    g_doWarmup 0
-
-    //set time in seconds until map_restart.
-    //g_warmup 20
-
-    //set holodeck doors. 1=on, 0=off (Default: 1)
-    g_holoIntro 1
-
-    //set time in seconds intermission can last
-    //g_intermissionTime 20
-
-    //set time you get to beam into holodeck before you can be hit
-    g_ghostRespawn 5
 
     //bots to add
     {{ $botLevel := .botLevel -}}

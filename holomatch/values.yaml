@@ -86,12 +86,13 @@ holomatch:
 
   hostname: 'K8s Server'
   motd: 'Welcome to my server'
-  maxClients: 12
+  maxClients: 16
   privateClients: 0
   privatePassword: ""
   rconpassword: "iddqd"
   maxRate: 10000
   pureServer: 0
+  allowVote: 0
   # set holodeck doors. 1=on, 0=off (Default: 1)
   holoIntro: 0
   # set if you want a map_restart. 1=on, 0=off (Default: 1)
@@ -107,8 +108,9 @@ holomatch:
   additionalMasters:
     - "master.stvef.org"
 
-  botLevel: 5
+  botLevel: 4
   botList:
+    - neelix
     - tuvok
     - gowron
     - janeway
@@ -151,5 +153,7 @@ holomatch:
 
     mapList:
       - CTF_KLN1
+      - CTF_VOY1
       - CTF_BREACH
-      - CTF_GEOTHERMAL
+      - CTF_VOY2
+    #  - CTF_GEOTHERMAL
