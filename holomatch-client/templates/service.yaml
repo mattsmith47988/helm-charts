@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "holomatch-client.fullname" . }}-desktop
+  labels:
+    {{- include "holomatch-client.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.desktop.service.type }}
+  ports:
+    - port: {{ .Values.desktop.service.port }}
+      targetPort: 80
+      protocol: TCP
+      name: desktop-web
+  selector:
+    {{- include "holomatch-client.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "holomatch-client.fullname" . }}
+  labels:
+    {{- include "holomatch-client.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.holomatch.service.type }}
+  ports:
+    - port: {{ .Values.holomatch.service.port }}
+      targetPort: {{ .Values.holomatch.container.port | default 10000 }}
+      protocol: TCP
+      name: hm-client
+  selector:
+    {{- include "holomatch-client.selectorLabels" . | nindent 4 }}
