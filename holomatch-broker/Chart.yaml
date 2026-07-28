@@ -1,0 +1,9 @@
+apiVersion: v2
+name: holomatch-broker
+description: >-
+  Session broker for browser-based Holomatch play. Spawns one ephemeral Selkies
+  client pod per player, reverse-proxies to it, and cleans up on disconnect.
+  Includes a coturn TURN server and Envoy Gateway (Gateway API) routing.
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

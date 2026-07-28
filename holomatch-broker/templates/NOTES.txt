@@ -1,0 +1,35 @@
+Holomatch browser play is deploying.
+
+Open:  https://{{ .Values.gateway.host }}
+
+A private game session (Selkies client pod) is created per visitor and torn down
+{{ .Values.broker.idleTimeoutSeconds }}s after they disconnect. Concurrency cap: {{ .Values.broker.maxSessions }}.
+
+Checklist to make WebRTC actually connect:
+
+1. Envoy Gateway must be installed with the GatewayClass "{{ .Values.gateway.className }}", and the
+   Gateway API *experimental channel* CRDs (UDPRoute) must be present.
+
+2. cert-manager must run with the ExperimentalGatewayAPISupport feature gate so
+   it can issue the "{{ .Values.gateway.tlsSecretName }}" certificate for the Gateway listener.
+
+{{- if not .Values.turn.externalHost }}
+
+3. !! turn.externalHost is NOT set. WebRTC will fail in-cluster. Set it to the
+   public DNS/IP where browsers can reach coturn on UDP/TCP {{ .Values.turn.port }}.
+{{- else }}
+
+3. TURN endpoint: {{ .Values.turn.externalHost }}:{{ .Values.turn.port }} ({{ .Values.turn.protocol }}).
+   Open these ports to the internet on the coturn node:
+     - {{ .Values.turn.port }}/udp and {{ .Values.turn.port }}/tcp   (TURN listener)
+     - {{ .Values.turn.relayMinPort }}-{{ .Values.turn.relayMaxPort }}/udp   (TURN relay range)
+{{- end }}
+
+{{- if and (not .Values.turn.existingSecret) (not .Values.turn.sharedSecret) }}
+
+NOTE: a TURN shared secret was auto-generated. For GitOps/ArgoCD, pin it by
+setting `turn.existingSecret` (preferred) or `turn.sharedSecret`, otherwise it
+may change on re-render and break authentication.
+{{- end }}
+
+The dedicated server the client connects to: {{ include "holomatch-broker.gameServerHost" . }}:{{ .Values.gameServer.port }}

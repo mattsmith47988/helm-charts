@@ -1,0 +1,16 @@
+{{- if .Values.gateway.game.enabled }}
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: UDPRoute
+metadata:
+  name: {{ .Values.gateway.game.serviceName }}
+  labels:
+    {{- include "holomatch-broker.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+    - name: {{ .Values.gateway.name }}
+      sectionName: game
+  rules:
+    - backendRefs:
+        - name: {{ .Values.gateway.game.serviceName }}
+          port: {{ .Values.gateway.game.servicePort }}
+{{- end }}

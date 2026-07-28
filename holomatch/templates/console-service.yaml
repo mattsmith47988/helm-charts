@@ -1,0 +1,18 @@
+{{- if .Values.console.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "holomatch.fullname" . }}-console
+  labels:
+    {{- include "holomatch.labels" . | nindent 4 }}
+    app.kubernetes.io/component: console
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: {{ .Values.console.port }}
+      targetPort: console
+      protocol: TCP
+  selector:
+    {{- include "holomatch.selectorLabels" . | nindent 4 }}
+{{- end }}

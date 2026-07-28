@@ -1,0 +1,135 @@
+# Default values for holomatch-broker.
+
+nameOverride: ""
+fullnameOverride: ""
+
+# ---------------------------------------------------------------------------
+# Broker (the front-door reverse proxy that spawns/cleans up session pods)
+# ---------------------------------------------------------------------------
+broker:
+  replicaCount: 1
+  image:
+    repository: mattsmith47988/holomatch-broker
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  # Max concurrent player sessions (protects the node).
+  maxSessions: 10
+  # Seconds after the player disconnects before the pod is torn down.
+  idleTimeoutSeconds: 60
+  # Hard lifetime cap for any session.
+  maxLifetimeSeconds: 7200
+  # Seconds to wait for a session pod to become ready.
+  readyTimeoutSeconds: 120
+  # Optional shared access code gating the whole experience ("" = open).
+  accessPassword: ""
+
+# ---------------------------------------------------------------------------
+# Per-player session pod (the Selkies client image)
+# ---------------------------------------------------------------------------
+session:
+  image:
+    repository: mattsmith47988/holomatch-client
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  port: 8080
+  shmSize: 256Mi
+  resources:
+    requests:
+      cpu: "500m"
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 1Gi
+  # Non-sensitive environment injected into every session pod (rendering + Selkies
+  # knobs). TURN host/port/protocol are added automatically from `.turn` below.
+  env:
+    DISPLAY_WIDTH: "1280"
+    DISPLAY_HEIGHT: "720"
+    SELKIES_ENCODER: "x264enc"
+    SELKIES_FRAMERATE: "60"
+    SELKIES_VIDEO_BITRATE: "8000"
+    SELKIES_AUDIO_BITRATE: "128000"
+
+# ---------------------------------------------------------------------------
+# Dedicated game server the client auto-connects to (in-cluster)
+# ---------------------------------------------------------------------------
+gameServer:
+  # Blank => holomatch.<release-namespace>.svc.cluster.local
+  host: ""
+  port: 27960
+
+# ---------------------------------------------------------------------------
+# TURN server (coturn). MANDATORY for in-cluster WebRTC.
+# ---------------------------------------------------------------------------
+turn:
+  # Public address browsers use to reach TURN (DNS name or IP). REQUIRED.
+  externalHost: ""
+  # Public IP coturn advertises for relay candidates when behind NAT. Leave blank
+  # if the coturn node already has the public IP on its interface.
+  externalIP: ""
+  port: 3478
+  # Transport hint given to the browser (udp or tcp).
+  protocol: udp
+  realm: holomatch
+  # Relay port range (all of these UDP/TCP ports must be open to the internet).
+  relayMinPort: 49160
+  relayMaxPort: 49200
+  # Shared secret for time-limited (REST) auth, shared by coturn and Selkies.
+  # For GitOps, DO NOT commit a real secret: set `existingSecret` instead and
+  # create it once out of band. If both are blank a value is generated (and
+  # preserved across `helm upgrade`, but not across `helm template`/ArgoCD).
+  sharedSecret: ""
+  existingSecret: ""
+  coturn:
+    enabled: true
+    image: coturn/coturn:4.6.2
+    # Host networking makes the listening + relay ports reachable without a
+    # Service per port. Pin to the public node with nodeSelector.
+    hostNetwork: true
+    nodeSelector: {}
+    tolerations: []
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: "1"
+        memory: 256Mi
+
+# ---------------------------------------------------------------------------
+# Envoy Gateway (Gateway API) front door
+# ---------------------------------------------------------------------------
+gateway:
+  # Create the shared Gateway. Set false to attach routes to an existing one.
+  create: true
+  name: holomatch
+  className: eg
+  host: holomatch.smetersen.co
+  # cert-manager cluster issuer for the HTTPS listener certificate.
+  # Requires cert-manager started with ExperimentalGatewayAPISupport=true.
+  clusterIssuer: letsencrypt-prod
+  tlsSecretName: holomatch-tls
+  # Add an HTTP :80 listener that redirects to HTTPS.
+  httpsRedirect: true
+  # Expose the public UDP game server through the same Gateway with a UDPRoute.
+  game:
+    enabled: true
+    port: 27960
+    serviceName: holomatch
+    servicePort: 27960
+
+serviceAccount:
+  create: true
+  name: ""
+
+podAnnotations: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

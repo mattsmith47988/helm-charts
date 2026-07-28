@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: mattsmith47988/holomatch
+  repository: mattsmith47988/holomatch-server
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "0.1.1"
@@ -37,9 +37,77 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: NodePort
+  # ClusterIP is recommended. Expose the server publicly with the Gateway API
+  # UDPRoute below (Envoy Gateway), or switch to NodePort/LoadBalancer.
+  type: ClusterIP
   port: 27960
-  nodePort: 27960
+  # Only used when type is NodePort. Must fall within the cluster's node-port
+  # range (default 30000-32767); 27960 is out of range and will be rejected.
+  # nodePort: 30960
+
+# Expose the UDP game port through Envoy Gateway using the Gateway API.
+# Requires the Gateway API experimental-channel CRDs (UDPRoute) to be installed.
+# The holomatch-broker chart provisions a Gateway named "holomatch" with a
+# "game" UDP listener that this route can attach to. For a standalone server
+# (no broker), set gateway.create=true to create a dedicated Gateway.
+udpRoute:
+  enabled: false
+  parentRefs:
+    - name: holomatch
+      sectionName: game
+  gateway:
+    create: false
+    className: eg
+    listenerName: game
+
+# Web-based admin console: an RCON sidecar that serves a small, password-protected
+# page for running live server commands (skip to next map, add/remove bots, kick,
+# status, ...). The command box relays to the co-located dedicated server over
+# localhost RCON. See files/rcon-console.py for the (stdlib-only) implementation.
+console:
+  enabled: true
+  # The sidecar runs the bundled script on a stock Python image, mounted from a
+  # ConfigMap -- there is no separate console image to build or push.
+  image:
+    repository: python
+    tag: "3.12-slim"
+    pullPolicy: IfNotPresent
+  # Port the console web UI listens on inside the pod.
+  port: 8090
+  # HTTP Basic Auth protecting the console UI. RCON itself is reached only over
+  # localhost inside the pod and reuses holomatch.rconpassword.
+  auth:
+    username: admin
+    # Leave blank to auto-generate a password on install (kept across upgrades).
+    password: ""
+    # Or reference an existing Secret containing a `password` key.
+    existingSecret: ""
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  # Public hostname for the console (kept separate from the game address).
+  host: holomatch-admin.smetersen.co
+  # Expose the console through Envoy Gateway (Gateway API).
+  gateway:
+    # Create a dedicated Gateway with an HTTPS listener for `host`. Set false to
+    # attach the HTTPRoute to an existing Gateway via `parentRefs` below.
+    create: true
+    className: eg
+    # cert-manager cluster issuer for the HTTPS certificate (needs cert-manager
+    # started with ExperimentalGatewayAPISupport=true). Blank => no annotation.
+    clusterIssuer: letsencrypt-prod
+    # Defaults to <release>-holomatch-console-tls when blank.
+    tlsSecretName: ""
+    # Add an HTTP :80 listener that redirects to HTTPS.
+    httpsRedirect: true
+  # Used only when gateway.create=false: attach to an existing Gateway/listener.
+  parentRefs:
+    - name: holomatch
+      sectionName: console
 
 ingress:
   enabled: false

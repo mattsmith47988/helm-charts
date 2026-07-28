@@ -1,0 +1,62 @@
+Holomatch dedicated server "{{ .Values.holomatch.hostname }}" is deploying.
+
+The server speaks the Star Trek: Voyager Elite Force / Quake 3 network protocol
+over UDP port {{ .Values.service.port }}.
+
+{{- if .Values.udpRoute.enabled }}
+
+Public access (Envoy Gateway):
+  Players connect to the Gateway address on UDP {{ .Values.service.port }}.
+  A UDPRoute was created attaching to Gateway:
+  {{- range .Values.udpRoute.parentRefs }}
+    - {{ .name }}{{ if .sectionName }} (listener: {{ .sectionName }}){{ end }}
+  {{- end }}
+{{- else if eq .Values.service.type "NodePort" }}
+
+Public access (NodePort):
+  Players connect to <nodeIP>:{{ .Values.service.nodePort | default .Values.service.port }} (UDP).
+{{- else }}
+
+The Service is ClusterIP (in-cluster only). To let players on the internet
+connect, either enable udpRoute (Envoy Gateway) or set service.type=NodePort/LoadBalancer.
+{{- end }}
+
+In-cluster clients (e.g. the holomatch browser client) connect to:
+  {{ include "holomatch.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
+
+From a native Elite Force client, open the console (~) and run:
+  /connect <address>:{{ .Values.service.port }}
+
+{{- if .Values.console.enabled }}
+
+Admin console (run live server commands from your browser):
+  URL:      https://{{ .Values.console.host }}
+  Username: {{ .Values.console.auth.username }}
+  Password:
+  {{- if .Values.console.auth.existingSecret }}
+    (from Secret {{ .Values.console.auth.existingSecret }}, key `password`)
+  {{- else if .Values.console.auth.password }}
+    (the value you set in console.auth.password)
+  {{- else }}
+    kubectl -n {{ .Release.Namespace }} get secret {{ include "holomatch.fullname" . }}-console-auth \
+      -o jsonpath='{.data.password}' | base64 -d; echo
+  {{- end }}
+
+  Type a command, confirm the dialog, and it runs on the live server. Handy ones:
+    vstr nextmap      skip to the next map in the rotation
+    map HM_BORG3      load a specific map now
+    addbot tuvok 4    add a bot (name, skill 1-5, [team], [delay])
+    kick allbots      remove every bot
+    status            list connected players and their client numbers
+    map_restart       restart the current match
+
+  Fallback (no browser): kubectl exec -it -n {{ .Release.Namespace }} \
+    deploy/{{ include "holomatch.fullname" . }} -c {{ .Chart.Name }} -- /console.sh
+{{- else }}
+
+Tip: set `console.enabled=true` to get a password-protected web console for
+running live server commands (next map, add/remove bots, kick, status, ...).
+{{- end }}
+
+Edit map rotation, bots, and match rules under `.Values.holomatch` and run
+`helm upgrade` — the server pod restarts automatically when the config changes.

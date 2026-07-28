@@ -1,0 +1,31 @@
+{{- if .Values.turn.coturn.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "holomatch-broker.coturn.fullname" . }}
+  labels:
+    {{- include "holomatch-broker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: coturn
+data:
+  turnserver.conf: |
+    listening-ip=0.0.0.0
+    listening-port={{ .Values.turn.port }}
+    realm={{ .Values.turn.realm }}
+    use-auth-secret
+    min-port={{ .Values.turn.relayMinPort }}
+    max-port={{ .Values.turn.relayMaxPort }}
+    {{- if .Values.turn.externalIP }}
+    external-ip={{ .Values.turn.externalIP }}
+    {{- end }}
+    no-tls
+    no-dtls
+    no-cli
+    no-software-attribute
+    no-rfc5780
+    no-stun-backward-compatibility
+    response-origin-only-with-rfc5780
+    allow-loopback-peers
+    log-file=stdout
+    pidfile=/tmp/turnserver.pid
+    userdb=/tmp/turnserver.db
+{{- end }}

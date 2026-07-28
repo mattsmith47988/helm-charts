@@ -1,0 +1,38 @@
+{{- if .Values.udpRoute.enabled -}}
+{{- if .Values.udpRoute.gateway.create }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ include "holomatch.fullname" . }}
+  labels:
+    {{- include "holomatch.labels" . | nindent 4 }}
+spec:
+  gatewayClassName: {{ .Values.udpRoute.gateway.className }}
+  listeners:
+    - name: {{ .Values.udpRoute.gateway.listenerName }}
+      protocol: UDP
+      port: {{ .Values.service.port }}
+      allowedRoutes:
+        kinds:
+          - kind: UDPRoute
+---
+{{- end }}
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: UDPRoute
+metadata:
+  name: {{ include "holomatch.fullname" . }}
+  labels:
+    {{- include "holomatch.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+    {{- if .Values.udpRoute.gateway.create }}
+    - name: {{ include "holomatch.fullname" . }}
+      sectionName: {{ .Values.udpRoute.gateway.listenerName }}
+    {{- else }}
+    {{- toYaml .Values.udpRoute.parentRefs | nindent 4 }}
+    {{- end }}
+  rules:
+    - backendRefs:
+        - name: {{ include "holomatch.fullname" . }}
+          port: {{ .Values.service.port }}
+{{- end }}

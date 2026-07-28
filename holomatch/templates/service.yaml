@@ -8,11 +8,11 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: game
       {{- if and .Values.service.nodePort (eq .Values.service.type "NodePort") }}
       nodePort: {{ .Values.service.nodePort }}
       {{- end }}
       protocol: UDP
-      name: http
+      name: game
   selector:
     {{- include "holomatch.selectorLabels" . | nindent 4 }}

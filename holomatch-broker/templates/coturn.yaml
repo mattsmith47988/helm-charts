@@ -1,0 +1,68 @@
+{{- if .Values.turn.coturn.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "holomatch-broker.coturn.fullname" . }}
+  labels:
+    {{- include "holomatch-broker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: coturn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "holomatch-broker.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: coturn
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/coturn-configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "holomatch-broker.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: coturn
+    spec:
+      {{- if .Values.turn.coturn.hostNetwork }}
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- end }}
+      containers:
+        - name: coturn
+          image: {{ .Values.turn.coturn.image }}
+          # Assemble the runtime config so the shared secret never appears in argv.
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              cp /config/turnserver.conf /tmp/turnserver.conf
+              printf 'static-auth-secret=%s\n' "$TURN_SHARED_SECRET" >> /tmp/turnserver.conf
+              exec turnserver -c /tmp/turnserver.conf
+          env:
+            - name: TURN_SHARED_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "holomatch-broker.turnSecretName" . }}
+                  key: shared-secret
+          ports:
+            - name: turn-udp
+              containerPort: {{ .Values.turn.port }}
+              protocol: UDP
+            - name: turn-tcp
+              containerPort: {{ .Values.turn.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          resources:
+            {{- toYaml .Values.turn.coturn.resources | nindent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "holomatch-broker.coturn.fullname" . }}
+      {{- with .Values.turn.coturn.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.turn.coturn.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

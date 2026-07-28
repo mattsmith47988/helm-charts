@@ -13,10 +13,12 @@ spec:
       {{- include "holomatch.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        # Roll the deployment whenever the generated hm.cfg changes.
+        checksum/config: {{ include (print $.Template.BasePath "/hm-cfg.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "holomatch.selectorLabels" . | nindent 8 }}
     spec:
@@ -36,27 +38,91 @@ spec:
           stdin: true
           tty: true
           ports:
-            - name: http
-              containerPort: 27960
+            - name: game
+              containerPort: {{ .Values.service.port }}
               protocol: UDP
+          # The dedicated server speaks UDP only, so probe the process instead of HTTP.
           livenessProbe:
-            httpGet:
-              path: /
-              port: 80
+            exec:
+              command: ["pgrep", "-f", "liliumvoyded"]
+            initialDelaySeconds: 15
+            periodSeconds: 20
           readinessProbe:
-            httpGet:
-              path: /
-              port: 80
+            exec:
+              command: ["pgrep", "-f", "liliumvoyded"]
+            initialDelaySeconds: 10
+            periodSeconds: 15
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
           - name: config-files
             mountPath: /stvef/baseEF/hm.cfg
             subPath: hm.cfg
+        {{- if .Values.console.enabled }}
+        - name: console
+          image: "{{ .Values.console.image.repository }}:{{ .Values.console.image.tag }}"
+          imagePullPolicy: {{ .Values.console.image.pullPolicy }}
+          command: ["python3", "/opt/console/rcon-console.py"]
+          env:
+            - name: PYTHONDONTWRITEBYTECODE
+              value: "1"
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: LISTEN_PORT
+              value: {{ .Values.console.port | quote }}
+            - name: RCON_HOST
+              value: "127.0.0.1"
+            - name: RCON_PORT
+              value: {{ .Values.service.port | quote }}
+            - name: RCON_PASSWORD
+              value: {{ required "console.enabled requires holomatch.rconpassword to be set" .Values.holomatch.rconpassword | quote }}
+            - name: CONSOLE_USER
+              value: {{ .Values.console.auth.username | quote }}
+            - name: CONSOLE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.console.auth.existingSecret | default (printf "%s-console-auth" (include "holomatch.fullname" .)) }}
+                  key: password
+          ports:
+            - name: console
+              containerPort: {{ .Values.console.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: console
+            initialDelaySeconds: 5
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: console
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.console.resources | nindent 12 }}
+          volumeMounts:
+            - name: console-script
+              mountPath: /opt/console
+              readOnly: true
+        {{- end }}
       volumes:
         - name: config-files
           configMap:
-            name: hm-cfg
+            name: {{ include "holomatch.fullname" . }}-cfg
+        {{- if .Values.console.enabled }}
+        - name: console-script
+          configMap:
+            name: {{ include "holomatch.fullname" . }}-console
+            defaultMode: 0555
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

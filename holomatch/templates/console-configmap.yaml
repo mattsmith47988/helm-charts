@@ -1,0 +1,11 @@
+{{- if .Values.console.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "holomatch.fullname" . }}-console
+  labels:
+    {{- include "holomatch.labels" . | nindent 4 }}
+data:
+  rcon-console.py: |
+{{ .Files.Get "files/rcon-console.py" | indent 4 }}
+{{- end }}

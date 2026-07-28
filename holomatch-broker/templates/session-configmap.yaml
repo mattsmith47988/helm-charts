@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "holomatch-broker.fullname" . }}-session
+  labels:
+    {{- include "holomatch-broker.labels" . | nindent 4 }}
+data:
+  # Non-sensitive environment injected by the broker into every session pod.
+  # The TURN shared secret is injected separately via a Secret reference.
+  session.env: |
+    {{- range $k, $v := .Values.session.env }}
+    {{ $k }}={{ $v }}
+    {{- end }}
+    {{- if .Values.turn.externalHost }}
+    SELKIES_TURN_HOST={{ .Values.turn.externalHost }}
+    SELKIES_TURN_PORT={{ .Values.turn.port }}
+    SELKIES_TURN_PROTOCOL={{ .Values.turn.protocol }}
+    SELKIES_STUN_HOST={{ .Values.turn.externalHost }}
+    SELKIES_STUN_PORT={{ .Values.turn.port }}
+    {{- end }}
