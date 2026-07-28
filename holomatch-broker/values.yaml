@@ -10,7 +10,7 @@ broker:
   replicaCount: 1
   image:
     repository: mattsmith47988/holomatch-broker
-    tag: "latest"
+    tag: "v0.0.1"
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -36,7 +36,7 @@ broker:
 session:
   image:
     repository: mattsmith47988/holomatch-client
-    tag: "latest"
+    tag: "v0.0.1"
     pullPolicy: IfNotPresent
   port: 8080
   shmSize: 256Mi
@@ -108,7 +108,7 @@ turn:
 # ---------------------------------------------------------------------------
 gateway:
   # Create the shared Gateway. Set false to attach routes to an existing one.
-  create: true
+  create: false
   name: holomatch
   className: eg
   host: holomatch.smetersen.co
@@ -120,7 +120,7 @@ gateway:
   httpsRedirect: true
   # Expose the public UDP game server through the same Gateway with a UDPRoute.
   game:
-    enabled: true
+    enabled: false
     port: 27960
     serviceName: holomatch
     servicePort: 27960
